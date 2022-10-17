@@ -1,4 +1,4 @@
-include "main.h"
+#include "main.h"
 
 /************************* PRINT CHAR *************************/
 
@@ -42,11 +42,11 @@ int print_string(va_list types, char buffer[],
 	UNUSED(precision);
 	UNUSED(size);
 	if (str == NULL)
-        {
+	{
 		str = "(null)";
 		if (precision >= 6)
 			str = "      ";
-        }  
+	}
 
 	while (str[length] != '\0')
 		length++;
@@ -54,8 +54,8 @@ int print_string(va_list types, char buffer[],
 	if (precision >= 0 && precision < length)
 		length = precision;
 
-        if (width > length)
-        {
+	if (width > length)
+	{
 		if (flags & F_MINUS)
 		{
 			write(1, &str[0], length);
@@ -125,7 +125,7 @@ int print_int(va_list types, char buffer[],
 	num = (unsigned long int)n;
 
 	if (n < 0)
-        {
+	{
 		num = (unsigned long int)((-1) * n);
 		is_negative = 1;
 	}

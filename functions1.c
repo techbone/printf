@@ -25,10 +25,10 @@ int print_unsigned(va_list types, char buffer[],
 		buffer[BUFF_SIZE - 1] = '\0';
 
 		while (num > 0)
-		{			
+		{
 			buffer[i--] = (num % 10) + '0';
 			num /= 10;
-	        }
+		}
 
 		i++;
 
@@ -49,7 +49,7 @@ int print_unsigned(va_list types, char buffer[],
 int print_octal(va_list types, char buffer[],
 	int flags, int width, int precision, int size)
 {
-	
+
 	int i = BUFF_SIZE - 2;
 	unsigned long int num = va_arg(types, unsigned long int);
 	unsigned long int init_num = num;
