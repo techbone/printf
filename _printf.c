@@ -1,83 +1,82 @@
-#include <unistd.h>
 #include "main.h"
-#include <stdio.h>
+#include <stdlib.h>
 
 /**
- * buffer_print - print given buffer to stdout
- * @buffer: buffer to print
- * @nbytes: number of bytes to print
+ * check_for_specifiers - checks if there is a valid format specifier
+ * @format: possible format specifier
  *
- * Return: nbytes
+ * Return: pointer to valid function or NULL
  */
-int buffer_print(char buffer[], unsigned int nbytes)
+static int (*check_for_specifiers(const char *format))(va_list)
 {
-	write(1, buffer, nbytes);
-	return (nbytes);
-}
+	unsigned int i;
+	print_t p[] = {
+		{"c", print_c},
+		{"s", print_s},
+		{"i", print_i},
+		{"d", print_d},
+		{"u", print_u},
+		{"b", print_b},
+		{"o", print_o},
+		{"x", print_x},
+		{"X", print_X},
+		{"p", print_p},
+		{"S", print_S},
+		{"r", print_r},
+		{"R", print_R},
+		{NULL, NULL}
+	};
 
-/**
- * buffer_add - adds a string to buffer
- * @buffer: buffer to fill
- * @str: str to add
- * @buffer_pos: pointer to buffer first empty position
- *
- * Return: if buffer filled and emptyed return number of printed char
- * else 0
- */
-int buffer_add(char buffer[], char *str, unsigned int *buffer_pos)
-{
-	int i = 0;
-	unsigned int count = 0, pos = *buffer_pos, size = BUFF_SIZE;
-
-	while (str && str[i])
+	for (i = 0; p[i].t != NULL; i++)
 	{
-		if (pos == size)
+		if (*(p[i].t) == *format)
 		{
-			count += buffer_print(buffer, pos);
-			pos = 0;
+			break;
 		}
-		buffer[pos++] = str[i++];
 	}
-	*buffer_pos = pos;
-	return (count);
+	return (p[i].f);
 }
 
 /**
- * _printf - produces output according to a format
- * @format: character string
+ * _printf - prints anything
+ * @format: list of argument types passed to the function
  *
- * Return: the number of characters printed excluding the null byte
- * used to end output to strings
+ * Return: number of characters printed
  */
 int _printf(const char *format, ...)
 {
-	va_list ap;
-	unsigned int i = 0, buffer_pos = 0, count = 0;
-	char *res_str, *aux, buffer[BUFF_SIZE];
+	unsigned int i = 0, count = 0;
+	va_list valist;
+	int (*f)(va_list);
 
-	if (!format || !format[0])
+	if (format == NULL)
 		return (-1);
-	va_start(ap, format);
-	aux = malloc(sizeof(char) * 2);
-	while (format && format[i])
+	va_start(valist, format);
+	while (format[i])
 	{
-		if (format[i] == '%')
+		for (; format[i] != '%' && format[i]; i++)
 		{
-			res_str = treat_format(format, &i, ap);
-			count += buffer_add(buffer, res_str, &buffer_pos);
-			free(res_str);
+			_putchar(format[i]);
+			count++;
 		}
+		if (!format[i])
+			return (count);
+		f = check_for_specifiers(&format[i + 1]);
+		if (f != NULL)
+		{
+			count += f(valist);
+			i += 2;
+			continue;
+		}
+		if (!format[i + 1])
+			return (-1);
+		_putchar(format[i]);
+		count++;
+		if (format[i + 1] == '%')
+			i += 2;
 		else
-		{
-			aux[0] = format[i++];
-			aux[1] = '\0';
-			count += buffer_add(buffer, aux, &buffer_pos);
-		}
+			i++;
 	}
-	count += buffer_print(buffer, buffer_pos);
-	free(aux);
-	va_end(ap);
-	if (!count)
-		count = -1;
+	va_end(valist);
 	return (count);
 }
