@@ -96,6 +96,7 @@ int print_percent(va_list types, char buffer[],
 	UNUSED(size);
 	return (write(1, "%%", 1));
 }
+
 /************************* PRINT INT *************************/
 /**
  * print_int - Print int
@@ -150,8 +151,9 @@ int print_int(va_list types, char buffer[],
  * @precision: Precision specification
  * @size: Size specifier
  * Return: Numbers of char printed.
- */int print_binary(va_list types, char buffer[],
-		 int flags, int width, int precision, int size)
+ */
+int print_binary(va_list types, char buffer[],
+	int flags, int width, int precision, int size)
 {
 	unsigned int n, m, i, sum;
 	unsigned int a[32];
